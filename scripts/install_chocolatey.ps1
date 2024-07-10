@@ -10,7 +10,13 @@ Write-Host "Installing Winfetch..."
 choco install winfetch -y
 Write-Host "Installing Git..."
 choco install git -y
-.\setup_git.ps1
+$userName = Read-Host -Prompt "Enter your Git user name for your windows machine"
+$userEmail = Read-Host -Prompt "Enter your Git user email for your windows machine"
+Write-Host "Configuring Git..."
+git config --global user.name "$userName"
+git config --global user.email "$userEmail"
+git config --global --unset credential.helper
+git config --global credential.helper store
 Write-Host "Installing Starship..."
 choco install starship -y
 Write-Host "Installing Chocolatey Gui..."

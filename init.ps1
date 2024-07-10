@@ -6,7 +6,7 @@ function Install-PowerShell {
     winget install --id Microsoft.Powershell --source winget
     Write-Host "Restarting PowerShell in Windows Terminal..."
     Start-Sleep -Seconds 3
-    Start-Process -FilePath "wt.exe" -ArgumentList "pwsh -NoExit -Command `"& {`""$PSCommandPath`""}`""
+    Start-Process -FilePath "wt.exe" -ArgumentList "pwsh -NoExit -Command `"& {`"$PSCommandPath`"}`""
     exit
 }
 
@@ -29,7 +29,7 @@ $setupScriptUrl = "https://raw.githubusercontent.com/WOCOMLABS/kickstart.windows
 $setupScriptPath = "$scriptDir\download_and_extract_repo.ps1"
 
 Invoke-WebRequest -Uri $setupScriptUrl -OutFile $setupScriptPath
-& $setupScriptPath
+# & $setupScriptPath
 
 # Run installation scripts from the extracted repository
 $repoExtractPath = "$env:USERPROFILE\dev\kickstart.windows"

@@ -50,18 +50,3 @@ if ($availableDistros) {
 } else {
     Write-Host "No valid distributions found."
 }
-
-# After installation, prompt user to set up the new distribution
-Write-Host "Please complete the initial setup of your new WSL distribution by creating a username and password."
-Write-Host "Once completed, the setup script will continue."
-
-# Wait for the user to complete the initial setup
-Start-Sleep -Seconds 30
-
-# Continue with the rest of the setup process
-# (This part assumes the rest of the setup scripts are to be executed)
-cd $repoDir
-.\scripts\setup_git.ps1
-.\scripts\clone_repo.ps1
-
-Write-Host "Setup completed successfully!"
