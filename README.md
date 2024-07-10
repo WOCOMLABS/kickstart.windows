@@ -52,14 +52,6 @@ This guide will help you set up your Windows Subsystem for Linux (WSL) environme
 Alternatively if your windows is a fresh install, you can run the following command in PowerShell to automate the entire setup process (including installing Chocolatey and Git, and then cloning and running the setup script):
 
 ```powershell
-# Set execution policy temporarily
-Set-ExecutionPolicy -ExecutionPolicy Bypass -Scope Process -Force
-
-# Ensure TLS 1.2 is used
-[System.Net.ServicePointManager]::SecurityProtocol = [System.Net.ServicePointManager]::SecurityProtocol -bor [System.Net.SecurityProtocolType]::Tls12
-
-# Download and execute the main init script
-Invoke-WebRequest -Uri 'https://raw.githubusercontent.com/WOCOMLABS/kickstart.windows/main/init.ps1' -OutFile "$env:USERPROFILE\init.ps1"
-& "$env:USERPROFILE\init.ps1"
+Set-ExecutionPolicy Bypass -Scope Process -Force; [System.Net.ServicePointManager]::SecurityProtocol = [System.Net.ServicePointManager]::SecurityProtocol -bor [System.Net.SecurityProtocolType]::Tls12; Invoke-WebRequest -Uri 'https://raw.githubusercontent.com/WOCOMLABS/kickstart.windows/main/init.ps1' -OutFile "$env:USERPROFILE\init.ps1"; & "$env:USERPROFILE\init.ps1"
 ```
 
