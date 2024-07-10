@@ -1,4 +1,4 @@
-# Kickstart WSL Setup
+# Kickstart Windows & WSL Setup
 
 # Function to install PowerShell and restart script in Windows Terminal
 function Install-PowerShell {
@@ -6,7 +6,7 @@ function Install-PowerShell {
     winget install --id Microsoft.Powershell --source winget
     Write-Host "Restarting PowerShell in Windows Terminal..."
     Start-Sleep -Seconds 3
-    Start-Process -FilePath "wt.exe" -ArgumentList "pwsh -NoExit -File `"$PSCommandPath`""
+    Start-Process -FilePath "wt.exe" -ArgumentList "pwsh -NoExit -Command `"& {`""$PSCommandPath`""}`""
     exit
 }
 
@@ -18,9 +18,23 @@ if ($PSVersionTable.PSVersion.Major -lt 7) {
     Install-PowerShell
 }
 
-# Execute installation scripts
+# Ensure the script path exists
+$scriptDir = "$env:USERPROFILE\dev\scripts"
+if (-not (Test-Path -Path $scriptDir)) {
+    New-Item -Path $scriptDir -ItemType Directory
+}
+
+# Download and run the repository setup script
+$setupScriptUrl = "https://raw.githubusercontent.com/WOCOMLABS/kickstart.windows/main/download_and_extract_repo.ps1"
+$setupScriptPath = "$scriptDir\download_and_extract_repo.ps1"
+
+Invoke-WebRequest -Uri $setupScriptUrl -OutFile $setupScriptPath
+& $setupScriptPath
+
+# Run installation scripts from the extracted repository
+$repoExtractPath = "$env:USERPROFILE\dev\kickstart.windows"
+cd $repoExtractPath
 .\scripts\install_chocolatey.ps1
 .\scripts\install_wsl.ps1
-
 
 Write-Host "Setup completed successfully!"
