@@ -6,7 +6,7 @@ function Install-PowerShell {
     winget install --id Microsoft.Powershell --source winget
     Write-Host "Restarting PowerShell in Windows Terminal..."
     Start-Sleep -Seconds 3
-    Start-Process -FilePath "wt.exe" -ArgumentList "pwsh -NoExit -Command `"& {`""$PSCommandPath`""}`""
+    Start-Process -FilePath "wt.exe" -ArgumentList "pwsh -NoExit -Command `"& `"$PSCommandPath`"`""
     exit
 }
 
