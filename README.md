@@ -36,7 +36,7 @@ This guide will help you set up your Windows Subsystem for Linux (WSL) environme
 
     Now that Git is installed, clone this repository by running:
     ```powershell
-    git clone https://github.com/WOCOMLABS/kickstart.windows.git %USERPROFILE%\kickstart\kickstart.windows
+    git clone https://github.com/WOCOMLABS/kickstart.windows.git "$env:USERPROFILE\kickstart\kickstart.windows"
     ```
 
 5. **Run the Setup Script:**
@@ -52,6 +52,10 @@ This guide will help you set up your Windows Subsystem for Linux (WSL) environme
 Alternatively if your windows is a fresh install, you can run the following command in PowerShell to automate the entire setup process (including installing Chocolatey and Git, and then cloning and running the setup script):
 
 ```powershell
-Set-ExecutionPolicy Bypass -Scope Process -Force; [System.Net.ServicePointManager]::SecurityProtocol = [System.Net.ServicePointManager]::SecurityProtocol -bor [System.Net.SecurityProtocolType]::Tls12; Invoke-WebRequest -Uri 'https://raw.githubusercontent.com/WOCOMLABS/kickstart.windows/main/init.ps1' -OutFile "$env:USERPROFILE\init.ps1"; & "$env:USERPROFILE\init.ps1"
+Set-ExecutionPolicy Bypass -Scope Process -Force; Invoke-Expression -Command (curl -H "Cache-Control: no-cache" -H "Pragma: no-cache" 'https://raw.githubusercontent.com/WOCOMLABS/kickstart.windows/main/scripts/download_and_extract_repository.ps1?t=' + (Get-Date).Ticks | Out-String)
 ```
 
+the script will prompt you to 
+set your git username && git user email
+
+later will install ubuntu and you will be asked to create a user and set its password

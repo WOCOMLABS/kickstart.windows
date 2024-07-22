@@ -11,32 +11,49 @@ function Export-WSLDistribution {
 
 # List installed WSL distributions
 Write-Host "Listing installed WSL distributions..."
-$installedDistros = wsl --list --verbose
-Write-Host $installedDistros
+$installedDistrosOutput = wsl --list --verbose 2>&1
+if ($installedDistrosOutput -like "*no installed distributions*") {
+    Write-Host "No installed WSL distributions found."
+    $installedDistros = $null
+} else {
+    Write-Host $installedDistrosOutput
+    $installedDistros = $installedDistrosOutput -split "`n" | Select-Object -Skip 1
+}
 
-# Check if any distributions are running
-$runningDistros = $installedDistros | Where-Object { $_ -match "Running" }
-if ($runningDistros) {
-    Write-Host "The following WSL distributions are currently running:"
-    $runningDistros | ForEach-Object { Write-Host $_ }
-    
-    $userChoice = Read-Host "Do you want to export and unregister these distributions before proceeding with a new installation? (yes/no)"
-    if ($userChoice -eq "yes") {
-        foreach ($distro in $runningDistros) {
-            $distroName = ($distro -split '\s+')[1]
-            $exportPath = "$env:USERPROFILE\$distroName-export.tar"
-            Export-WSLDistribution -distroName $distroName -exportPath $exportPath
-            wsl --unregister $distroName
+if ($installedDistros) {
+    # Check if any distributions are running
+    $runningDistros = $installedDistros | Where-Object { $_ -like "*Running*" }
+    if ($runningDistros) {
+        Write-Host "The following WSL distributions are currently running:"
+        $runningDistros | ForEach-Object { Write-Host $_ }
+
+        $userChoice = Read-Host "Do you want to export and unregister these distributions before proceeding with a new installation? (yes/no)"
+        if ($userChoice -eq "yes") {
+            foreach ($distro in $runningDistros) {
+                $distroName = ($distro -split '\s+')[0]
+                $exportPath = "$env:USERPROFILE\$distroName-export.tar"
+                Export-WSLDistribution -distroName $distroName -exportPath $exportPath
+                wsl --unregister $distroName
+            }
+        } else {
+            Write-Host "Operation aborted by user."
+            exit
         }
-    } else {
-        Write-Host "Operation aborted by user."
-        exit
     }
 }
 
 # List available distributions for installation
 Write-Host "Listing available WSL distributions..."
-$availableDistros = wsl --list --online | Where-Object { $_ -match "Ubuntu" }
+$availableDistrosOutput = wsl --list --online 2>&1
+if ($availableDistrosOutput -like "*No valid distributions found*" -or $availableDistrosOutput -like "*Error: 0x80370102*") {
+    Write-Host "No valid distributions found."
+    Write-Host "Please ensure that WSL is updated and try running the script again."
+    exit
+} else {
+    Write-Host $availableDistrosOutput
+    $availableDistros = $availableDistrosOutput -split "`n" | Select-Object -Skip 1
+}
+
 if ($availableDistros) {
     Write-Host "Available WSL distributions:"
     $availableDistros | ForEach-Object { Write-Host $_ }
@@ -49,4 +66,5 @@ if ($availableDistros) {
     wsl --install -d $distroChoice
 } else {
     Write-Host "No valid distributions found."
+    Write-Host "Please ensure that WSL is updated and try running the script again."
 }

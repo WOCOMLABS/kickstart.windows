@@ -17,6 +17,8 @@ git config --global user.name "$userName"
 git config --global user.email "$userEmail"
 git config --global --unset credential.helper
 git config --global credential.helper store
+Write-Host "Installing GitHub CLI..."
+choco install gh -y
 Write-Host "Installing Starship..."
 choco install starship -y
 Write-Host "Installing Chocolatey Gui..."
