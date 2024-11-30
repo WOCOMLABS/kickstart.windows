@@ -19,6 +19,38 @@ Install-Application "GitHub CLI" "GitHub.cli"
 Install-Application "Starship" "Starship.Starship"
 Install-Application "JetBrains Toolbox" "JetBrains.Toolbox"
 
+# Check and enable Starship in PowerShell profile
+function Enable-Starship {
+    Write-Host "Checking if Starship is properly set up..."
+    try {
+        # Check if Starship is installed
+        if (!(Get-Command starship -ErrorAction SilentlyContinue)) {
+            Write-Host "Error: Starship is not installed or not in PATH." -ForegroundColor Red
+            return
+        }
+
+        # Check if Starship is already initialized in the PowerShell profile
+        $profilePath = $PROFILE
+        if (!(Test-Path $profilePath)) {
+            Write-Host "PowerShell profile not found. Creating profile..."
+            New-Item -ItemType File -Path $profilePath -Force | Out-Null
+        }
+
+        $profileContent = Get-Content $profilePath -ErrorAction SilentlyContinue
+        if ($profileContent -notcontains 'Invoke-Expression (&starship init powershell)') {
+            Write-Host "Adding Starship initialization to PowerShell profile..."
+            Add-Content -Path $profilePath -Value 'Invoke-Expression (&starship init powershell)'
+            Write-Host "Starship initialized successfully in PowerShell profile."
+        } else {
+            Write-Host "Starship is already initialized in PowerShell profile."
+        }
+    } catch {
+        Write-Host "Error: Failed to enable Starship. Ensure Starship is installed correctly." -ForegroundColor Red
+    }
+}
+
+Enable-Starship
+
 # Update the PATH environment variable
 Write-Host "Updating PATH environment variable..."
 try {
