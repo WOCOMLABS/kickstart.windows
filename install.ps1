@@ -19,7 +19,7 @@ if ($PSVersionTable.PSVersion.Major -lt 7) {
 }
 
 $directoryPath = "$env:USERPROFILE\dev\kickstart.windows"
-& "$directoryPath\scripts\install_git.ps1"
+& "$directoryPath\scripts\install_dev.ps1"
 & "$directoryPath\scripts\install_wsl.ps1"
 
 Write-Host "Setup completed successfully!"

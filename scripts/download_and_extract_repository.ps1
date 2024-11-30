@@ -47,15 +47,11 @@ if (-not (Test-Path -Path $directoryPath)) {
     Write-Host "Repository already exists at $directoryPath"
 }
 
-# Ensure the init.ps1 script is executable
-$initScriptPath = "$directoryPath\init.ps1"
-if (Test-Path -Path $initScriptPath) {
+# Ensure the install.ps1 script is executable
+$installScriptPath = "$directoryPath\install.ps1"
+if (Test-Path -Path $installScriptPath) {
     Write-Host "Execution Setup ..."
-    & $initScriptPath
+    & $installScriptPath
 } else {
-    Write-Host "init.ps1 script not found at $initScriptPath"
+    Write-Host "init.ps1 script not found at $installScriptPath"
 }
-
-
-
-

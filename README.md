@@ -31,15 +31,15 @@ This guide will help you set up your Windows Subsystem for Linux (WSL) environme
 
     Now that Git is installed, clone this repository by running:
     ```powershell
-    git clone https://github.com/WOCOMLABS/kickstart.windows.git "$env:USERPROFILE\kickstart\kickstart.windows"
+    git clone https://github.com/WOCOMLABS/kickstart.windows.git "$env:USERPROFILE\dev\kickstart\kickstart.windows"
     ```
 
 5. **Run the Setup Script:**
 
     Navigate to the cloned repository and run the setup script:
     ```powershell
-    cd $env:USERPROFILE\kickstart\kickstart.windows
-    .\init.ps1
+    cd $env:USERPROFILE\dev\kickstart\kickstart.windows
+    .\install.ps1
     ```
 
 ## Automated Setup
