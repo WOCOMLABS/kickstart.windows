@@ -1,3 +1,6 @@
+# Flag to track if shell restart is needed
+$RestartShellRequired = $false
+
 # Function to install applications using winget
 function Install-Application {
     param (
@@ -71,9 +74,8 @@ function Update-Path {
             if ($userPath -notcontains $newEntry) {
                 $updatedPath = $userPath + ";" + $newEntry
                 [System.Environment]::SetEnvironmentVariable("Path", $updatedPath, [System.EnvironmentVariableTarget]::User)
-                Write-Host "User-level PATH updated successfully. Restart your session to apply changes." -ForegroundColor Green
-                Start-Process -FilePath "pwsh" -ArgumentList "-NoExit", "-Command & {`"$PSCommandPath`"}"
-                exit
+                Write-Host "User-level PATH updated successfully."
+                $global:RestartShellRequired = $true
             } else {
                 Write-Host "User-level PATH already contains the required entry."
             }
@@ -114,6 +116,7 @@ Install-Application "Git" "Git.Git"
 Install-Application "GitHub CLI" "GitHub.cli"
 Install-Application "Starship" "Starship.Starship"
 Install-Application "JetBrains Toolbox" "JetBrains.Toolbox"
+Install-Application "Docker Desktop" "Docker.DockerDesktop"
 
 Enable-Starship
 
@@ -122,5 +125,12 @@ $starshipPath = "C:\Users\$env:USERNAME\AppData\Local\Programs\starship"
 Update-Path -newEntry $starshipPath
 
 Configure-Git
+
+# Restart shell if required
+if ($RestartShellRequired) {
+    Write-Host "Restarting PowerShell session to apply changes..." -ForegroundColor Yellow
+    Start-Process -FilePath "pwsh" -ArgumentList "-NoExit", "-Command & {`"$PSCommandPath`"}"
+    exit
+}
 
 Write-Host "All tasks completed successfully!" -ForegroundColor Green
