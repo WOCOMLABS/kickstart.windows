@@ -23,6 +23,8 @@ This guide will help you set up your Windows Subsystem for Linux (WSL) environme
     git config --global user.name "Name" 
     git config --global user.email "name.lastname@domain.com"
     git config --global init.defaultBranch main
+    git config --global --unset credential.helper
+    git config --global credential.helper store
     ```   
 
 4. **Clone the Repository:**
