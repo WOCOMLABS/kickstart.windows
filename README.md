@@ -11,25 +11,18 @@ This guide will help you set up your Windows Subsystem for Linux (WSL) environme
     winget install --id Microsoft.Powershell --source winget
     ```
 
-2. **Install Chocolatey:**
+2. **Install Git:**
 
-    If Chocolatey is not already installed, open PowerShell as an administrator and run the following command:
     ```powershell
-    Set-ExecutionPolicy Bypass -Scope Process -Force; [System.Net.ServicePointManager]::SecurityProtocol = [System.Net.ServicePointManager]::SecurityProtocol -bor [System.Net.SecurityProtocolType]::Tls12; iex ((New-Object System.Net.WebClient).DownloadString('https://community.chocolatey.org/install.ps1'))
+    winget install --id Git.Git -e --source winget
     ```
 
-3. **Install Git:**
+ 3. **Setup Git Config:**
 
-    Once Chocolatey is installed, you can install Git by running the following command in PowerShell:
     ```powershell
-    choco install git -y
-    ```
-
- 3. **Install Chocolatey Gui:**
-
-    Once Chocolatey is installed, you can install Chocolatey Gui by running the following command in PowerShell:
-    ```powershell
-     choco install chocolateygui -y
+    git config --global user.name "Name" 
+    git config --global user.email "name.lastname@domain.com"
+    git config --global init.defaultBranch main
     ```   
 
 4. **Clone the Repository:**
@@ -43,7 +36,7 @@ This guide will help you set up your Windows Subsystem for Linux (WSL) environme
 
     Navigate to the cloned repository and run the setup script:
     ```powershell
-    cd %USERPROFILE%\kickstart\kickstart.windows
+    cd $env:USERPROFILE\kickstart\kickstart.windows
     .\init.ps1
     ```
 
