@@ -3,11 +3,9 @@ if (-not (Get-Command git -ErrorAction SilentlyContinue)) {
     Write-Host "Installing Git..."
     Start-Process -FilePath "winget" -ArgumentList "install --id Git.Git -e --source winget" -Wait
 
-    # Actualizar PATH en la sesión actual
     $env:Path = [System.Environment]::GetEnvironmentVariable("Path", [System.EnvironmentVariableTarget]::Machine) + ";" + 
                 [System.Environment]::GetEnvironmentVariable("Path", [System.EnvironmentVariableTarget]::User)
 
-    # Verificar si git está disponible
     if (-not (Get-Command git -ErrorAction SilentlyContinue)) {
         Write-Host "Git did not install correctly or is not in the PATH. Please check manually."
         exit
