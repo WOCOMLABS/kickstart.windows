@@ -1,4 +1,4 @@
-# Define a reusable function to install applications using winget
+# Function to install applications using winget
 function Install-Application {
     param (
         [string]$appName,
@@ -7,41 +7,39 @@ function Install-Application {
     Write-Host "Installing $appName..."
     try {
         Start-Process -FilePath "winget" -ArgumentList "install --id $wingetId -e --source winget" -Wait -NoNewWindow -ErrorAction Stop
-        Write-Host "$appName installed successfully."
+        Write-Host "$appName installed successfully." -ForegroundColor Green
     } catch {
         Write-Host "Error: Failed to install $appName. Please check if winget is installed or the application ID is correct." -ForegroundColor Red
     }
 }
 
-# Function to check and enable Starship in the PowerShell profile
+# Function to ensure Starship is set up
 function Enable-Starship {
     Write-Host "Checking if Starship is properly set up..."
     try {
-        # Check if Starship is installed
         if (!(Get-Command starship -ErrorAction SilentlyContinue)) {
             Write-Host "Starship is not installed or not in PATH. Attempting installation..." -ForegroundColor Yellow
             Install-Application "Starship" "Starship.Starship"
         }
 
-        # Verify Starship installation
         if (!(Get-Command starship -ErrorAction SilentlyContinue)) {
             Write-Host "Error: Starship installation failed or is not in PATH." -ForegroundColor Red
             return
         }
 
-        # Check if PowerShell profile exists, create if not
+        # Ensure PowerShell profile exists
         $profilePath = $PROFILE
         if (!(Test-Path $profilePath)) {
             Write-Host "PowerShell profile not found. Creating profile..."
             New-Item -ItemType File -Path $profilePath -Force | Out-Null
         }
 
-        # Check and add Starship initialization to the profile
+        # Add Starship initialization to profile
         $profileContent = Get-Content $profilePath -ErrorAction SilentlyContinue
         if ($profileContent -notcontains 'Invoke-Expression (&starship init powershell)') {
             Write-Host "Adding Starship initialization to PowerShell profile..."
             Add-Content -Path $profilePath -Value "`nInvoke-Expression (&starship init powershell)"
-            Write-Host "Starship initialized successfully in PowerShell profile."
+            Write-Host "Starship initialized successfully in PowerShell profile." -ForegroundColor Green
         } else {
             Write-Host "Starship is already initialized in PowerShell profile."
         }
@@ -50,14 +48,13 @@ function Enable-Starship {
     }
 }
 
-# Function to update the PATH environment variable dynamically
+# Function to update PATH
 function Update-Path {
     param (
         [string]$newEntry
     )
     Write-Host "Updating PATH environment variable..."
     try {
-        # Check if running as Administrator
         $isAdmin = ([Security.Principal.WindowsPrincipal][Security.Principal.WindowsIdentity]::GetCurrent()).IsInRole([Security.Principal.WindowsBuiltInRole]::Administrator)
 
         if ($isAdmin) {
@@ -65,7 +62,7 @@ function Update-Path {
             if ($machinePath -notcontains $newEntry) {
                 $updatedPath = $machinePath + ";" + $newEntry
                 [System.Environment]::SetEnvironmentVariable("Path", $updatedPath, [System.EnvironmentVariableTarget]::Machine)
-                Write-Host "Machine-level PATH updated successfully."
+                Write-Host "Machine-level PATH updated successfully." -ForegroundColor Green
             } else {
                 Write-Host "Machine-level PATH already contains the required entry."
             }
@@ -74,7 +71,9 @@ function Update-Path {
             if ($userPath -notcontains $newEntry) {
                 $updatedPath = $userPath + ";" + $newEntry
                 [System.Environment]::SetEnvironmentVariable("Path", $updatedPath, [System.EnvironmentVariableTarget]::User)
-                Write-Host "User-level PATH updated successfully. Restart your session to apply changes."
+                Write-Host "User-level PATH updated successfully. Restart your session to apply changes." -ForegroundColor Green
+                Start-Process -FilePath "pwsh" -ArgumentList "-NoExit", "-Command & {`"$PSCommandPath`"}"
+                exit
             } else {
                 Write-Host "User-level PATH already contains the required entry."
             }
@@ -88,6 +87,11 @@ function Update-Path {
 function Configure-Git {
     Write-Host "Configuring Git..."
     try {
+        if (!(Get-Command git -ErrorAction SilentlyContinue)) {
+            Write-Host "Error: Git is not installed or not in PATH." -ForegroundColor Red
+            return
+        }
+
         $userName = Read-Host -Prompt "Enter your Git user name for your Windows machine"
         $userEmail = Read-Host -Prompt "Enter your Git user email for your Windows machine"
 
@@ -97,27 +101,26 @@ function Configure-Git {
         git config --global --unset credential.helper
         git config --global credential.helper store
 
-        Write-Host "Git configured successfully with the provided user name and email."
+        Write-Host "Git configured successfully with the provided user name and email." -ForegroundColor Green
     } catch {
-        Write-Host "Error: Failed to configure Git. Ensure Git is installed and the commands are correct. Details: $_" -ForegroundColor Red
+        Write-Host "Error: Failed to configure Git. Details: $_" -ForegroundColor Red
     }
 }
 
-# Main script execution
+# Main execution
+Write-Host "Starting setup..." -ForegroundColor Cyan
 
-# Install required applications
 Install-Application "Git" "Git.Git"
 Install-Application "GitHub CLI" "GitHub.cli"
 Install-Application "Starship" "Starship.Starship"
 Install-Application "JetBrains Toolbox" "JetBrains.Toolbox"
 
-# Enable Starship
 Enable-Starship
 
-# Add Starship to PATH
-Update-Path -newEntry "C:\Users\$env:USERNAME\AppData\Local\Programs\starship"
+# Dynamically detect Starship path and update PATH
+$starshipPath = "C:\Users\$env:USERNAME\AppData\Local\Programs\starship"
+Update-Path -newEntry $starshipPath
 
-# Configure Git
 Configure-Git
 
 Write-Host "All tasks completed successfully!" -ForegroundColor Green
