@@ -24,3 +24,5 @@ Write-Host "Installing GitHub CLI..."
 winget install -e --id GitHub.cli
 Write-Host "Installing Starship..."
 winget install -e --id Starship.Starship
+Write-Host "Installing Jetbrains Toolbox..."
+winget install -e --id JetBrains.Toolbox
